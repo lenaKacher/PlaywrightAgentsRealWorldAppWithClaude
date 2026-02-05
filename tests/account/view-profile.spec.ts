@@ -24,12 +24,13 @@ test.describe('User Account Management', () => {
     const accountBalance = page.locator('text=$671.31');
     await expect(accountBalance).toBeVisible();
 
-    // Verify all profile information is visible in sidebar
-    const sidebarProfileSection = page.locator('aside, [role="navigation"]');
-    await expect(sidebarProfileSection).toBeVisible();
+    // Verify all profile information is visible together
+    const profileSection = page.locator('img[alt*="Solon_Robel60"]').locator('..');
+    await expect(profileSection).toBeVisible();
 
-    // Verify the profile info container has multiple headings
-    const profileHeadings = page.locator('heading[level="6"]');
-    expect(await profileHeadings.count()).toBeGreaterThan(1);
+    // Verify the profile info is visible
+    await expect(page.locator('text=Lenore L S')).toBeVisible();
+    await expect(page.locator('text=@Solon_Robel60')).toBeVisible();
+    await expect(page.locator('text=$671.31')).toBeVisible();
   });
 });

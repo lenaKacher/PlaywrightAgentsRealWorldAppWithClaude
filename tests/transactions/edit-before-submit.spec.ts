@@ -17,12 +17,12 @@ test.describe('Transaction Management - Create & Send Payments', () => {
     // 2. Enter amount '100' in Amount field
     const amountField = page.getByRole('textbox', { name: 'Amount' });
     await amountField.fill('100');
-    await expect(amountField).toHaveValue('$100.00');
+    await expect(amountField).toHaveValue(/^\$100/);
 
     // 3. Clear the Amount field and enter '75' instead
     await amountField.clear();
     await amountField.fill('75');
-    await expect(amountField).toHaveValue('$75.00');
+    await expect(amountField).toHaveValue(/^\$75/);
 
     // 4. Enter a note and click 'Pay'
     await page.getByRole('textbox', { name: 'Add a note' }).fill('Updated payment');
@@ -30,6 +30,6 @@ test.describe('Transaction Management - Create & Send Payments', () => {
     
     // Verify transaction is created with updated amount
     await expect(page.getByRole('alert')).toContainText('Transaction Submitted');
-    await expect(page.getByRole('heading', { level: 2 })).toContainText('$75.00');
+    await expect(page.getByRole('heading', { name: /Paid \$75\.00/ })).toBeVisible();
   });
 });

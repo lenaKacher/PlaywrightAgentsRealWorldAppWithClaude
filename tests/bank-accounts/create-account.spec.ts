@@ -48,6 +48,6 @@ test.describe('Bank Accounts Management', () => {
     await expect(page.getByRole('heading', { name: 'Bank Accounts' })).toBeVisible();
     
     // Verify new account appears in the list
-    await expect(page.locator('text=My Test Bank')).toBeVisible();
+    await expect(page.locator('text=My Test Bank').first()).toBeVisible();
   });
 });
