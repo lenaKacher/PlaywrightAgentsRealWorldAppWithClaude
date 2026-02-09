@@ -4,20 +4,16 @@
 import { test, expect } from '../fixture/loginPage';
 
 test.describe('Transaction Filtering & Tabs', () => {
-  test.fixme('User can filter transactions by date range', async ({ loginPage }) => {
+  test('User can filter transactions by date range', async ({ loginPage }) => {
     // This test times out because the click on button:has-text("Home") causes the page context to close
     // The sidebar navigation behavior may be different in the test environment
     const page = loginPage;
+    const dateFilterButton = page.getByRole('button', { name: 'Date: ALL' });
 
-    // Ensure we're on the home page with transaction filters visible
-    await page.locator('button:has-text("Home")').first().click().catch(() => null);
-    await expect(page).toHaveURL(/\/$/);
-    
     // Wait for filters to be ready
-    await expect(page.locator('button:has-text("Date")')).toBeVisible();
+    await expect(dateFilterButton).toBeVisible();
 
     // 1. Click on 'Date' filter button
-    const dateFilterButton = page.locator('button:has-text("Date")').first();
     await dateFilterButton.click();
 
     // Verify calendar date picker is displayed

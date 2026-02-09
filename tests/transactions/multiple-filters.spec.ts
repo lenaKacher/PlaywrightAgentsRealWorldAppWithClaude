@@ -9,10 +9,6 @@ test.describe('Transaction Filtering & Tabs', () => {
     // The sidebar navigation behavior may be different in the test environment
     const page = loginPage;
 
-    // Ensure we're on home page to access filters
-    await page.locator('button:has-text("Home")').first().click().catch(() => null);
-    await expect(page).toHaveURL(/\/$/);
-
     // 1. Try to apply date filter if button exists
     const dateFilterButton = page.locator('button:has-text("Date")').first();
     if (await dateFilterButton.isVisible().catch(() => false)) {

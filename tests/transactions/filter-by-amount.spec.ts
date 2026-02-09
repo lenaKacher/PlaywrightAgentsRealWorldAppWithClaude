@@ -8,13 +8,9 @@ test.describe('Transaction Filtering & Tabs', () => {
     // This test times out because the click on button:has-text("Home") causes the page context to close
     // The sidebar navigation behavior may be different in the test environment
     const page = loginPage;
-
-    // Ensure we're on the home page with transaction filters visible
-    await page.locator('button:has-text("Home")').first().click().catch(() => null);
-    await expect(page).toHaveURL(/\/$/);
+    const amountFilterButton = page.getByRole('button', { name: 'Amount: $0 - $1,000' });
 
     // 1. Click on 'Amount' filter button
-    const amountFilterButton = page.locator('button:has-text("Amount")').first();
     await expect(amountFilterButton).toBeVisible();
     await amountFilterButton.click();
 
