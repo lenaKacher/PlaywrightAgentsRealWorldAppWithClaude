@@ -1,36 +1,28 @@
 // spec: specs/RealWorldApp-comprehensive-test-plan.md
 // seed: tests/seed.spec.ts
 
-import { test, expect } from '../fixture/loginPage';
+import { test, expect } from '../fixture/pageObjects';
 
 test.describe('User Account Management', () => {
-  test('User can view their account profile information', async ({ loginPage }) => {
-    const page = loginPage;
+  test('User can view their account profile information', async ({ userProfile }) => {
+    // Views user profile section in the sidebar
 
-    // 1. Look at the user profile section in the sidebar
-    // User avatar should be displayed
-    const userAvatar = page.locator('img[alt*="Solon_Robel60"]');
-    await expect(userAvatar).toBeVisible();
+    // 1. Verify user avatar is displayed
+    await userProfile.verifyAvatarVisible();
 
-    // Verify user's full name is shown
-    const userName = page.locator('text=Lenore L S');
-    await expect(userName).toBeVisible();
+    // 2. Verify user's full name is shown
+    await userProfile.verifyUserNameVisible();
 
-    // Verify user's handle is shown
-    const userHandle = page.locator('text=@Solon_Robel60');
-    await expect(userHandle).toBeVisible();
+    // 3. Verify user's handle is shown
+    await userProfile.verifyUserHandleVisible();
 
-    // Verify account balance is displayed
-    const accountBalance = page.locator('text=$671.31');
-    await expect(accountBalance).toBeVisible();
+    // 4. Verify account balance is displayed
+    await userProfile.verifyAccountBalanceVisible();
 
-    // Verify all profile information is visible together
-    const profileSection = page.locator('img[alt*="Solon_Robel60"]').locator('..');
-    await expect(profileSection).toBeVisible();
+    // 5. Verify all profile information is visible together
+    await userProfile.verifyProfileSectionVisible();
 
-    // Verify the profile info is visible
-    await expect(page.locator('text=Lenore L S')).toBeVisible();
-    await expect(page.locator('text=@Solon_Robel60')).toBeVisible();
-    await expect(page.locator('text=$671.31')).toBeVisible();
+    // 6. Final verification that all info is visible
+    await userProfile.verifyAllProfileInfoVisible();
   });
 });

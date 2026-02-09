@@ -1,5 +1,6 @@
 import { test as base, expect } from '@playwright/test';
 import { Page } from '@playwright/test';
+import { testConfig } from '../config/testConfig';
 
 type TestFixtures = {
   loginPage: Page;
@@ -7,11 +8,11 @@ type TestFixtures = {
 
 export const test = base.extend<TestFixtures>({
   loginPage: async ({ page }, use) => {
-    await page.goto('http://frontend-ta-realworldapp.apps.os-prod.lab.proficom.de/');
-    await page.fill('#username', 'Solon_Robel60');
-    await page.fill('#password', 's3cret');
-    await page.click('[data-test="signin-submit"]');
-    await page.waitForSelector('[data-test="sidenav-signout"]');
+    await page.goto(testConfig.baseUrl);
+    await page.fill(testConfig.loginSelectors.usernameField, testConfig.credentials.username);
+    await page.fill(testConfig.loginSelectors.passwordField, testConfig.credentials.password);
+    await page.click(testConfig.loginSelectors.signInButton);
+    await page.waitForSelector(testConfig.loginSelectors.signOutButton);
     await use(page);
   },
 });

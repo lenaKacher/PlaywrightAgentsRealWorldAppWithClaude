@@ -1,46 +1,32 @@
 // spec: specs/RealWorldApp-comprehensive-test-plan.md
 // seed: tests/seed.spec.ts
 
-import { test, expect } from '../fixture/loginPage';
+import { test, expect } from '../fixture/pageObjects';
 
 test.describe('User Account Management', () => {
-  test('User can edit their account settings', async ({ loginPage }) => {
-    const page = loginPage;
+  test('User can edit their account settings', async ({ sidebar, userSettings }) => {
+    // 1. Navigate to User Settings page
+    await sidebar.clickMyAccount();
+    await userSettings.verifyPageLoaded();
 
-    // 1. Click 'My Account' button in the sidebar
-    await page.locator('[data-test="sidenav-user-settings"]').click();
+    // 2. Verify form fields are visible
+    await userSettings.verifyAllFieldsVisible();
 
-    // 2. Verify User Settings page is displayed
-    await expect(page).toHaveURL(/user\/settings/);
-    await expect(page.getByRole('heading', { level: 2 })).toContainText('User Settings');
+    // 3. Verify current values are displayed in form
+    await userSettings.verifyFieldValue('First Name', 'Lenore L');
+    await userSettings.verifyFieldValue('Last Name', 'Solon_Robel60');
+    await userSettings.verifyFieldValue('Email', 'test.user@example.com');
+    await userSettings.verifyFieldValue('Phone Number', '123-456-7890');
 
-    // 3. Verify form fields are visible: First Name, Last Name, Email, Phone Number
-    const firstNameField = page.getByRole('textbox', { name: 'First Name' });
-    const lastNameField = page.getByRole('textbox', { name: 'Last Name' });
-    const emailField = page.getByRole('textbox', { name: 'Email' });
-    const phoneField = page.getByRole('textbox', { name: 'Phone Number' });
-
-    await expect(firstNameField).toBeVisible();
-    await expect(lastNameField).toBeVisible();
-    await expect(emailField).toBeVisible();
-    await expect(phoneField).toBeVisible();
-
-    // 4. Verify current values are displayed in form
-    await expect(firstNameField).toHaveValue('Lenore L');
-    await expect(lastNameField).toHaveValue('Solon_Robel60');
-    await expect(emailField).toHaveValue('test.user@example.com');
-    await expect(phoneField).toHaveValue('123-456-7890');
-
-    // 5. Verify Save button is visible and functional
-    const saveButton = page.getByRole('button', { name: 'Save' });
-    await expect(saveButton).toBeVisible();
+    // 4. Verify Save button is visible and functional
+    await expect(userSettings.getSaveButton()).toBeVisible();
     
     // Verify we can interact with the fields (modify and try to save)
-    await firstNameField.fill('John');
-    await expect(firstNameField).toHaveValue('John');
+    await userSettings.fillFirstName('John');
+    await expect(userSettings.getFirstNameField()).toHaveValue('John');
     
     // Restore original value
-    await firstNameField.fill('Lenore L');
-    await expect(firstNameField).toHaveValue('Lenore L');
+    await userSettings.fillFirstName('Lenore L');
+    await expect(userSettings.getFirstNameField()).toHaveValue('Lenore L');
   });
 });
