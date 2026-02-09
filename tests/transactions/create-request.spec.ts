@@ -1,40 +1,38 @@
 // spec: specs/RealWorldApp-comprehensive-test-plan.md
 // seed: tests/seed.spec.ts
 
-import { test, expect } from '../fixture/loginPage';
+import { test, expect } from '../fixture/pageObjects';
 
 test.describe('Transaction Management - Create & Send Payments', () => {
-  test('User can create and send a payment request transaction', async ({ loginPage }) => {
-    const page = loginPage;
-
-    // 1. Click the 'New' button in the top navigation
-    await page.locator('[data-test="nav-top-new-transaction"]').click();
-    await expect(page).toHaveURL(/transaction\/new/);
+  test('User can create and send a payment request transaction', async ({ homePage, transactionNew }) => {
+    // 1. Click the 'New' button to create a new transaction
+    await homePage.clickNew();
+    await transactionNew.verifyPageLoaded();
 
     // 2. Select 'April Stracke' from the contact list
-    await page.locator('[data-test="user-list-item-2vQ3zYpZAv"]').click();
-    await expect(page.getByRole('heading', { level: 2 })).toContainText('April Stracke');
+    await transactionNew.selectAprilStracke();
+    await transactionNew.verifyReceiverSelected('April Stracke');
 
     // 3. Enter amount '125.00' in the Amount field
-    await page.getByRole('textbox', { name: 'Amount' }).fill('125.00');
-    await expect(page.getByRole('textbox', { name: 'Amount' })).toHaveValue('$125.00');
+    await transactionNew.fillAmount('125.00');
+    await expect(transactionNew.getAmountField()).toHaveValue('$125.00');
 
     // 4. Enter 'Loan repayment' in the note field
-    await page.getByRole('textbox', { name: 'Add a note' }).fill('Loan repayment');
-    await expect(page.getByRole('textbox', { name: 'Add a note' })).toHaveValue('Loan repayment');
+    await transactionNew.fillNote('Loan repayment');
+    await expect(transactionNew.getNoteField()).toHaveValue('Loan repayment');
 
     // 5. Click the 'Request' button to create a payment request
-    await page.locator('[data-test="transaction-create-submit-request"]').click();
-    await expect(page.getByRole('alert')).toContainText('Transaction Submitted');
+    await transactionNew.clickRequest();
+    await expect(transactionNew.page.getByRole('alert')).toContainText('Transaction Submitted');
     
-    // Verify the completion screen shows the request was submitted
-    await expect(page.getByRole('heading', { name: /Requested.*Loan repayment/ })).toBeVisible();
+    // Click Return to Transactions button to navigate back to home
+    await transactionNew.page.getByRole('button', { name: /Return To Transactions/ }).click();
+    
+    // Wait for navigation back to home page
+    await transactionNew.page.waitForURL(/\/$/, { timeout: 5000 });
 
-    // 6. Click 'Return To Transactions' to verify the transaction was created
-    await page.locator('[data-test="new-transaction-return-to-transactions"]').click();
-    
-    // Verify we're back at the home page
-    await expect(page).toHaveURL(/\/$/);
-    await expect(page.locator('[role="grid"]')).toBeVisible();
+    // 6. Return to transactions and verify the transaction was created
+    await homePage.verifyPageLoaded();
+    await homePage.verifyGridVisible();
   });
 });

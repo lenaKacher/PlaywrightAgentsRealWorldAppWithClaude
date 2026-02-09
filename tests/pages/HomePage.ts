@@ -73,18 +73,32 @@ export class HomePage extends BasePage {
   }
 
   /**
-   * Click tab
+   * Get a specific tab by data-test attribute
    */
-  async clickTab(tabName: 'Everyone' | 'Friends' | 'Mine') {
-    await this.getTab(tabName).click();
+  getTabByDataTest(dataTestId: string) {
+    return this.page.locator(`[data-test="${dataTestId}"]`);
   }
 
   /**
-   * Verify tab is active
+   * Verify tab is active by data-test
    */
-  async verifyTabActive(tabName: 'Everyone' | 'Friends' | 'Mine') {
-    const tab = this.getTab(tabName);
+  async verifyTabActiveByDataTest(dataTestId: string) {
+    const tab = this.getTabByDataTest(dataTestId);
     await expect(tab).toHaveAttribute('aria-selected', 'true');
+  }
+
+  /**
+   * Click tab by data-test  
+   */
+  async clickTabByDataTest(dataTestId: string) {
+    await this.getTabByDataTest(dataTestId).click();
+  }
+
+  /**
+   * Get label text for current view
+   */
+  getLabelText() {
+    return this.page.locator('[role="grid"]').locator('..').locator('text=/Public|Contacts|Personal/');
   }
 
   /**

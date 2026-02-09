@@ -1,46 +1,44 @@
 // spec: specs/RealWorldApp-comprehensive-test-plan.md
 // seed: tests/seed.spec.ts
 
-import { test, expect } from '../fixture/loginPage';
+import { test, expect } from '../fixture/pageObjects';
 
 test.describe('Transaction Filtering & Tabs', () => {
-  test.fixme('Multiple filters can be applied together', async ({ loginPage }) => {
-    // This test times out because the click on button:has-text("Home") causes the page context to close
-    // The sidebar navigation behavior may be different in the test environment
-    const page = loginPage;
-
+  test.fixme('Multiple filters can be applied together', async ({ homePage }) => {
+    // This test is marked as fixme because sidebar navigation with button:has-text() locators
+    // causes page context to close in the test environment
+    
     // 1. Try to apply date filter if button exists
-    const dateFilterButton = page.locator('button:has-text("Date")').first();
+    const dateFilterButton = homePage.page.locator('[data-test="filters"] button').filter({ hasText: 'Date' }).first();
     if (await dateFilterButton.isVisible().catch(() => false)) {
       await dateFilterButton.click();
       
       // Select a date from calendar if visible
-      const dateInCalendar = page.locator('[role="button"]').filter({ hasText: /^\d{1,2}$/ }).first();
+      const dateInCalendar = homePage.page.locator('[role="button"]').filter({ hasText: /^\d{1,2}$/ }).first();
       if (await dateInCalendar.isVisible().catch(() => false)) {
         await dateInCalendar.click();
       }
     }
 
     // 2. Try to apply amount filter if button exists
-    const amountFilterButton = page.locator('button:has-text("Amount")').first();
+    const amountFilterButton = homePage.page.locator('[data-test="filters"] button').filter({ hasText: 'Amount' }).first();
     if (await amountFilterButton.isVisible().catch(() => false)) {
       await amountFilterButton.click();
       
       // Select an amount option if available
-      const filterOption = page.locator('[role="option"], [role="menuitem"]').first();
+      const filterOption = homePage.page.locator('[role="option"], [role="menuitem"]').first();
       if (await filterOption.isVisible().catch(() => false)) {
         await filterOption.click();
       }
     }
 
     // 3. Switch to 'Friends' tab while filters are active
-    await page.locator('[data-test="nav-contacts-tab"]').click();
+    await homePage.clickTabByDataTest('nav-contacts-tab');
     
     // Verify 'Friends' tab becomes active
-    const friendsTab = page.locator('[data-test="nav-contacts-tab"]');
-    await expect(friendsTab).toHaveAttribute('aria-selected', 'true');
+    await homePage.verifyTabActiveByDataTest('nav-contacts-tab');
 
     // Verify transaction list is still visible
-    await expect(page.locator('[role="grid"]')).toBeVisible();
+    await homePage.verifyGridVisible();
   });
 });

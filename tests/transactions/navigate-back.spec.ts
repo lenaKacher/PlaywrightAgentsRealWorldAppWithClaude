@@ -1,31 +1,19 @@
 // spec: specs/RealWorldApp-comprehensive-test-plan.md
 // seed: tests/seed.spec.ts
 
-import { test, expect } from '../fixture/loginPage';
+import { test, expect } from '../fixture/pageObjects';
 
 test.describe('Transaction Viewing & Details', () => {
-  test('User can navigate back from transaction detail to transaction list', async ({ loginPage }) => {
-    const page = loginPage;
+  test('User can navigate back from transaction detail to transaction list', async ({ sidebar, homePage, transactionDetail }) => {
+    // 1. Click on first transaction to view details
+    await homePage.clickFirstTransaction();
+    await transactionDetail.verifyPageLoaded();
 
-    // 1. Click on any transaction to view details
-    const firstTransaction = page.locator('[role="grid"] >> [data-test^="transaction-item-"]').first();
-    await firstTransaction.click();
+    // 2. Click 'Home' button in sidebar to navigate back
+    await sidebar.clickHome();
 
-    // Verify transaction detail page is shown
-    await expect(page).toHaveURL(/transaction\//);
-    await expect(page.getByRole('heading', { level: 2 })).toContainText('Transaction Detail');
-
-    // 2. Click the 'Home' button in the sidebar to navigate back
-    await page.locator('[data-test="sidenav-home"]').click();
-
-    // Verify navigation returns to the home/transaction list page
-    await expect(page).toHaveURL(/\/$/);
-    
-    // Verify transaction list is displayed
-    await expect(page.locator('[role="grid"]')).toBeVisible();
-    
-    // Verify Home button is highlighted/active
-    const homeButton = page.locator('[data-test="sidenav-home"]').first();
-    await expect(homeButton).toHaveAttribute('class', /Mui|active/);
+    // Verify navigation returns to home/transaction list
+    await homePage.verifyPageLoaded();
+    await homePage.verifyGridVisible();
   });
 });

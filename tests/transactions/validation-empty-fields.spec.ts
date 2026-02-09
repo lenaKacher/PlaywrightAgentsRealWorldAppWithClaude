@@ -1,48 +1,37 @@
 // spec: specs/RealWorldApp-comprehensive-test-plan.md
 // seed: tests/seed.spec.ts
 
-import { test, expect } from '../fixture/loginPage';
+import { test, expect } from '../fixture/pageObjects';
 
 test.describe('Transaction Management - Create & Send Payments', () => {
-  test('User cannot send payment with empty required fields', async ({ loginPage }) => {
-    const page = loginPage;
-
+  test('User cannot send payment with empty required fields', async ({ homePage, transactionNew }) => {
     // 1. Click 'New' and select a contact
-    await page.locator('[data-test="nav-top-new-transaction"]').click();
-    await expect(page).toHaveURL(/transaction\/new/);
-
-    // Select a contact
-    await page.locator('[data-test="user-list-item-5beuD3-B59"]').click();
-    await expect(page.getByRole('heading', { level: 2 })).toContainText('Reece Prohaska');
+    await homePage.clickNew();
+    await transactionNew.verifyPageLoaded();
+    await transactionNew.selectReeceProhaska();
+    await transactionNew.verifyReceiverSelected('Reece Prohaska');
 
     // 2. Verify Amount field is empty and Pay button behavior
-    const amountField = page.getByRole('textbox', { name: 'Amount' });
-    
-    // Amount should start empty
-    await expect(amountField).toHaveValue('');
+    await expect(transactionNew.getAmountField()).toHaveValue('');
 
-    // Try to submit without amount - button should be disabled
-    const payButton = page.locator('[data-test="transaction-create-submit-payment"]');
-    await expect(payButton).toBeDisabled();
+    // Pay button should be disabled without amount
+    const isButtonDisabled = await transactionNew.verifyPayButtonDisabled();
+    expect(isButtonDisabled).toBeTruthy();
 
-    // 3. Fill in amount and note, then verify payment can be sent
-    await amountField.fill('50.00');
-    await expect(amountField).toHaveValue(/^\$50/);
+    // 3. Fill in amount
+    await transactionNew.fillAmount('50.00');
+    await expect(transactionNew.getAmountField()).toHaveValue(/^\$50/);
 
-    // Add a note to complete the transaction (note may be required)
-    await page.getByRole('textbox', { name: 'Add a note' }).fill('Test payment');
-    await expect(page.getByRole('textbox', { name: 'Add a note' })).toHaveValue('Test payment');
+    // 4. Fill in note to complete the transaction
+    await transactionNew.fillNote('Test payment');
+    await expect(transactionNew.getNoteField()).toHaveValue('Test payment');
 
     // Now Pay button should be enabled
-    const isPayButtonEnabled = await payButton.isEnabled();
-    
-    if (isPayButtonEnabled) {
-      // Click Pay button if enabled
-      await payButton.click();
-      await expect(page.getByRole('alert')).toContainText('Transaction Submitted');
-    } else {
-      // If still disabled, verify that was the expected behavior
-      await expect(payButton).toBeDisabled();
+    // 5. Click Pay button if enabled
+    const isPayButtonNowEnabled = !(await transactionNew.verifyPayButtonDisabled());
+    if (isPayButtonNowEnabled) {
+      await transactionNew.clickPay();
+      await expect(transactionNew.page.getByRole('alert')).toContainText('Transaction Submitted');
     }
   });
 });

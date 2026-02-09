@@ -1,53 +1,37 @@
 // spec: specs/RealWorldApp-comprehensive-test-plan.md
 // seed: tests/seed.spec.ts
 
-import { test, expect } from '../fixture/loginPage';
+import { test, expect } from '../fixture/pageObjects';
 
 test.describe('Bank Accounts Management', () => {
-  test('User can create a new bank account', async ({ loginPage }) => {
-    const page = loginPage;
-
-    // 1. Click 'Bank Accounts' in sidebar
-    await page.locator('[data-test="sidenav-bankaccounts"]').click();
-    await expect(page).toHaveURL(/bankaccounts/);
-    
-    // Verify Bank Accounts list page is displayed
-    await expect(page.getByRole('heading', { name: 'Bank Accounts', exact: true })).toBeVisible();
+  test('User can create a new bank account', async ({ sidebar, bankAccounts, createBankAccount }) => {
+    // 1. Navigate to Bank Accounts page
+    await sidebar.clickBankAccounts();
+    await bankAccounts.verifyPageLoaded();
 
     // 2. Click 'Create' button
-    const createButton = page.getByRole('button', { name: 'Create' });
-    await createButton.click();
+    await bankAccounts.clickCreate();
+    await createBankAccount.verifyPageLoaded();
 
-    // Verify Create Bank Account page is displayed
-    await expect(page).toHaveURL(/bankaccounts\/new/);
-    
-    // Verify form fields are visible
-    await expect(page.getByRole('heading', { name: /Bank/ })).toBeVisible();
+    // 3. Enter bank account details
+    await createBankAccount.fillBankName('My Test Bank');
+    await expect(createBankAccount.getBankNameField()).toHaveValue('My Test Bank');
 
-    // 3. Enter 'My Test Bank' in Bank Name field
-    const bankNameField = page.getByRole('textbox', { name: /Bank.*Name|bankName/ });
-    await bankNameField.fill('My Test Bank');
-    await expect(bankNameField).toHaveValue('My Test Bank');
+    // 4. Enter routing number
+    await createBankAccount.fillRoutingNumber('021000021');
+    await expect(createBankAccount.getRoutingNumberField()).toHaveValue('021000021');
 
-    // 4. Enter '021000021' in Routing Number field
-    const routingField = page.getByRole('textbox', { name: /Routing/ });
-    await routingField.fill('021000021');
-    await expect(routingField).toHaveValue('021000021');
-
-    // 5. Enter '0123456789' in Account Number field
-    const accountField = page.getByRole('textbox', { name: /Account/ });
-    await accountField.fill('0123456789');
-    await expect(accountField).toHaveValue('0123456789');
+    // 5. Enter account number
+    await createBankAccount.fillAccountNumber('0123456789');
+    await expect(createBankAccount.getAccountNumberField()).toHaveValue('0123456789');
 
     // 6. Click 'Save' button
-    const saveButton = page.locator('[data-test*="bank-account-submit"], button:has-text("Save")');
-    await saveButton.click();
+    await createBankAccount.clickSave();
 
     // Verify success and return to Bank Accounts list
-    await expect(page).toHaveURL(/bankaccounts$/);
-    await expect(page.getByRole('heading', { name: 'Bank Accounts' })).toBeVisible();
+    await bankAccounts.verifyPageLoaded();
     
     // Verify new account appears in the list
-    await expect(page.locator('text=My Test Bank').first()).toBeVisible();
+    await expect(bankAccounts.page.locator('text=My Test Bank').first()).toBeVisible();
   });
 });

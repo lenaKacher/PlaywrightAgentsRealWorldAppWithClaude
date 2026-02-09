@@ -38,10 +38,19 @@ export class TransactionNewPage extends BasePage {
   }
 
   /**
-   * Get contact list item by data-test attribute
+   * Get contact list search input
    */
-  getContactByDataTest(dataTest: string) {
-    return this.page.locator(`[data-test="${dataTest}"]`);
+  getSearchInput() {
+    return this.page.locator('[data-test="user-list-search-input"]');
+  }
+
+  /**
+   * Search for contact
+   */
+  async searchContact(name: string) {
+    const input = this.getSearchInput();
+    await input.focus();
+    await input.pressSequentially(name);
   }
 
   /**
@@ -59,6 +68,13 @@ export class TransactionNewPage extends BasePage {
   }
 
   /**
+   * Get contact by data-test attribute
+   */
+  getContactByDataTest(dataTestId: string) {
+    return this.page.locator(`[data-test="${dataTestId}"]`);
+  }
+
+  /**
    * Select contact by data-test attribute
    */
   async selectContact(dataTestId: string) {
@@ -70,6 +86,13 @@ export class TransactionNewPage extends BasePage {
    */
   async selectReeceProhaska() {
     await this.selectContact('user-list-item-5beuD3-B59');
+  }
+
+  /**
+   * Select contact "April Stracke"
+   */
+  async selectAprilStracke() {
+    await this.selectContact('user-list-item-2vQ3zYpZAv');
   }
 
   /**

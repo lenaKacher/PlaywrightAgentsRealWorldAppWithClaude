@@ -1,21 +1,21 @@
 // spec: specs/RealWorldApp-comprehensive-test-plan.md
 // seed: tests/seed.spec.ts
 
-import { test, expect } from '../fixture/loginPage';
+import { test, expect } from '../fixture/pageObjects';
 
 test.describe('Transaction Filtering & Tabs', () => {
-  test.fixme('User can filter transactions by amount range', async ({ loginPage }) => {
-    // This test times out because the click on button:has-text("Home") causes the page context to close
-    // The sidebar navigation behavior may be different in the test environment
-    const page = loginPage;
-    const amountFilterButton = page.getByRole('button', { name: 'Amount: $0 - $1,000' });
+  test.fixme('User can filter transactions by amount range', async ({ homePage }) => {
+    // This test is marked as fixme because sidebar navigation with button:has-text() locators
+    // causes page context to close in the test environment
+    
+    const amountFilterButton = homePage.page.getByRole('button', { name: 'Amount: $0 - $1,000' });
 
     // 1. Click on 'Amount' filter button
     await expect(amountFilterButton).toBeVisible();
     await amountFilterButton.click();
 
     // 2. Verify filter options are visible or select a range
-    const filterOptions = page.locator('[role="option"], [role="menuitem"]');
+    const filterOptions = homePage.page.locator('[role="option"], [role="menuitem"]');
     
     // Try to select the first option if available
     if (await filterOptions.count({ timeout: 1000 }).catch(() => 0) > 0) {
@@ -26,6 +26,6 @@ test.describe('Transaction Filtering & Tabs', () => {
     }
 
     // 3. Verify transaction list is still visible
-    await expect(page.locator('[role="grid"]')).toBeVisible();
+    await homePage.verifyGridVisible();
   });
 });
